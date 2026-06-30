@@ -1,0 +1,135 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #0f0d09;
+  --bg2:      #161310;
+  --surface:  #1c1812;
+  --surface2: #231e16;
+  --surface3: #2e271c;
+
+  --border:   rgba(190,158,90,0.14);
+  --border2:  rgba(190,158,90,0.30);
+
+  --gold:     #b89557;
+  --gold2:    #8a7040;
+  --sage:     #7a9e7e;
+  --clay:     #b07060;
+  --amber:    #c9a050;
+
+  --text:     #e8dcc8;
+  --text2:    #c2b49a;
+  --muted:    #7a6e5a;
+  --muted2:   #5a5046;
+
+  --radius:    10px;
+  --radius-sm: 6px;
+  --radius-lg: 14px;
+
+  --font:      'EB Garamond', Georgia, 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 16px;
+  min-height: 100vh;
+  line-height: 1.65;
+  overflow-x: hidden;
+}
+
+/* ── Scrollbar ─────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(190,158,90,0.2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(190,158,90,0.38); }
+
+/* ── Selection ─────────────────────────────────────── */
+::selection { background: rgba(190,158,90,0.22); color: var(--text); }
+
+button { cursor: pointer; font-family: var(--font); }
+a { color: inherit; }
+
+/* ── Typography helpers ────────────────────────────── */
+.eyebrow {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ── Rule/divider text ─────────────────────────────── */
+.ruled-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--gold);
+  font-style: italic;
+  font-size: 15px;
+}
+.ruled-heading::before,
+.ruled-heading::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+/* ── Panel / card ──────────────────────────────────── */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.panel-hover {
+  transition: border-color 0.2s, background 0.2s;
+}
+.panel-hover:hover {
+  border-color: var(--border2);
+  background: var(--surface2);
+}
+
+/* ── Animations (minimal) ──────────────────────────── */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0; }
+}
+
+/* ── Skeleton (static, no shimmer) ────────────────── */
+.skeleton {
+  background: var(--surface2);
+  border-radius: 4px;
+}
+
+/* ── Stat badge ────────────────────────────────────── */
+.stat-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  letter-spacing: 0.3px;
+  font-family: var(--font-mono);
+}
+
+/* ── Tag pill ──────────────────────────────────────── */
+.tag {
+  display: inline-block;
+  padding: 2px 9px;
+  border-radius: 3px;
+  font-size: 12px;
+  border: 1px solid var(--border2);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  transition: border-color 0.15s, color 0.15s;
+}
+.tag:hover { border-color: var(--gold); color: var(--gold); }
