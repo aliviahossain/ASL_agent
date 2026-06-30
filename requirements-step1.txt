@@ -1,0 +1,8 @@
+# Step 1 only — paper fetching + PDF extraction
+arxiv>=2.1.0
+requests>=2.31.0
+PyMuPDF>=1.24.0
+pdfplumber>=0.11.0
+pydantic>=2.7.0
+pydantic-settings>=2.3.0
+pytest>=8.2.0
