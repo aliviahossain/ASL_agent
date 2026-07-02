@@ -231,13 +231,6 @@ function Hero() {
           </div>
         ))}
       </div>
-
-      <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 13, color: 'var(--muted)', alignSelf: 'center', fontStyle: 'italic' }}>Popular topics:</span>
-        {examples.map(ex => (
-          <span key={ex} className="tag">{ex}</span>
-        ))}
-      </div>
     </div>
   )
 }

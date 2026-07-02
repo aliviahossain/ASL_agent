@@ -63,29 +63,7 @@ def run_agent(query: str, max_per_source: int = 5, sources: list[str] | None = N
     reset_cache()
     sources_str = ",".join(sources or ["arxiv", "semantic_scholar"])
 
-    try:
-        graph = _build_graph()
-        initial_message = (
-            f"Research the topic: '{query}'\n"
-            f"1. Call search_papers with query='{query}', max_results={max_per_source}, sources='{sources_str}'\n"
-            f"2. Call summarize_paper for each of the top 3-5 papers\n"
-            f"3. Call detect_contradictions with all summarized paper IDs\n"
-            f"4. Call generate_overview with query='{query}'"
-        )
-        state = {
-            "query": query,
-            "messages": [HumanMessage(content=initial_message)],
-            "papers": [],
-            "summaries": {},
-            "findings": [],
-            "contradictions": [],
-            "overview": None,
-            "step_count": 0,
-        }
-        graph.invoke(state, config={"recursion_limit": 30})
-    except Exception as e:
-        logger.warning(f"LangGraph agent failed ({e}), falling back to sequential pipeline")
-        _sequential_fallback(query, max_per_source, sources_str)
+    _sequential_fallback(query, max_per_source, sources_str)
 
     cache = get_cache()
     return {

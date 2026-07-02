@@ -16,8 +16,8 @@ def call_llm(messages: list[dict], temperature: float = 0.3, max_tokens: int = 2
             api_base=settings.ollama_base_url,
             temperature=temperature,
             max_tokens=max_tokens,
-            timeout=1,          # fail fast when Ollama is not running
-            num_retries=0,      # no retries — fall back to mock immediately
+            timeout=120,        # Ollama can be slow on first call (model load)
+            num_retries=0,      # no retries — fall back to mock if it fails
         )
         return resp.choices[0].message.content or ""
     except Exception as e:

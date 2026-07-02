@@ -24,9 +24,17 @@ app.include_router(runs.router, prefix="/api")
 
 @app.get("/api/health")
 def health():
+    import httpx
+    ollama_ok = False
+    try:
+        r = httpx.get(f"{settings.ollama_base_url}/api/tags", timeout=3)
+        ollama_ok = r.status_code == 200
+    except Exception:
+        pass
     return {
         "status": "ok",
         "vector_store_size": collection_size(),
         "ollama_model": settings.ollama_model,
-        "ollama_url": settings.ollama_base_url,
+        "ollama_url": settings.ollama_base_url if ollama_ok else None,
+        "ollama_ok": ollama_ok,
     }

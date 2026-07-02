@@ -18,7 +18,7 @@ router = APIRouter()
 
 class AgentRequest(BaseModel):
     query: str
-    max_per_source: int = 5
+    max_per_source: int = 3
     sources: list[str] = ["arxiv", "semantic_scholar"]
 
 
