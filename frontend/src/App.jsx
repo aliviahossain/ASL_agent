@@ -6,6 +6,7 @@ import PaperModal from './components/PaperModal'
 import KnowledgeGraph from './components/KnowledgeGraph'
 import ResearchSummary from './components/ResearchSummary'
 import RunHistory from './components/RunHistory'
+import CinematicHero from './components/CinematicHero'
 
 const TABS = [
   { id: 'papers',   label: 'Papers' },
@@ -26,6 +27,7 @@ export default function App() {
   const [selected, setSelected]   = useState(null)
   const [query, setQuery]         = useState('')
   const [health, setHealth]       = useState(null)
+  const [preset, setPreset]       = useState('')
 
   useEffect(() => {
     const API = import.meta.env.VITE_API_URL || 'http://localhost:8000'
@@ -39,7 +41,7 @@ export default function App() {
   const handleRun = useCallback(async (searchQuery, options) => {
     setPapers([]); setSummaries({}); setContradictions([])
     setOverview(''); setGraphData({ nodes: [], links: [] })
-    setLogs([]); setQuery(searchQuery); setRunning(true)
+    setLogs([]); setQuery(searchQuery); setPreset(searchQuery); setRunning(true)
     setActiveTab('papers')
 
     try {
@@ -89,26 +91,30 @@ export default function App() {
     <div style={{ minHeight: '100vh' }}>
       <Header health={health} paperCount={papers.length} />
 
-      <main style={{ maxWidth: 1380, margin: '0 auto', padding: '28px 24px' }}>
-        <AgentRunner onRun={handleRun} running={running} />
+      {!hasResults && (
+        <CinematicHero onPreset={setPreset}>
+          <AgentRunner onRun={handleRun} running={running} preset={preset} dark />
+        </CinematicHero>
+      )}
 
-        {hasResults && (
-          <>
+      {hasResults && (
+        <main style={{ maxWidth: 1380, margin: '0 auto', padding: '28px 24px' }}>
+          <AgentRunner onRun={handleRun} running={running} preset={preset} />
+
+          <div className="anim-fade-in-up">
             <TabBar tabs={TABS} active={activeTab} onChange={setActiveTab} counts={counts} />
             <div style={{ display: 'grid', gridTemplateColumns: '268px 1fr', gap: 20, marginTop: 20, alignItems: 'start' }}>
               <StatusLog logs={logs} running={running} />
-              <div style={{ minHeight: 400 }}>
+              <div key={activeTab} className="tab-panel" style={{ minHeight: 400 }}>
                 {activeTab === 'papers'  && <PaperGrid papers={papers} summaries={summaries} query={query} onSelect={setSelected} />}
                 {activeTab === 'summary' && <ResearchSummary overview={overview} contradictions={contradictions} papers={papers} running={running} />}
                 {activeTab === 'graph'   && <KnowledgeGraph data={graphData} />}
                 {activeTab === 'history' && <RunHistory />}
               </div>
             </div>
-          </>
-        )}
-
-        {!hasResults && <Hero />}
-      </main>
+          </div>
+        </main>
+      )}
 
       {selected && <PaperModal paper={selected} summary={summaries[selected.paper_id]} onClose={() => setSelected(null)} />}
     </div>
@@ -117,22 +123,30 @@ export default function App() {
 
 function Header({ health, paperCount }) {
   const ollamaOk = health && health.ollama_url
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
 
   return (
-    <header style={{
+    <header className={`app-header anim-fade-in-down${scrolled ? ' scrolled' : ''}`} style={{
       borderBottom: '1px solid var(--border)',
-      background: 'var(--bg)',
+      background: 'rgba(11,14,23,0.8)',
       padding: '0 28px',
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       height: 58, position: 'sticky', top: 0, zIndex: 100,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-        <div style={{
+        <div className="logo-mark" style={{
           width: 32, height: 32, borderRadius: 4,
           border: '1px solid var(--border2)',
           background: 'var(--surface2)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           fontSize: 15, fontStyle: 'italic', fontWeight: 700, color: 'var(--gold)',
+          cursor: 'default',
         }}>A</div>
         <div>
           <div style={{ fontWeight: 600, fontSize: 16, letterSpacing: '0.01em', color: 'var(--text)' }}>ASL Agent</div>
@@ -144,16 +158,16 @@ function Header({ health, paperCount }) {
 
       <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
         {paperCount > 0 && (
-          <div className="stat-badge" style={{ background: 'var(--surface2)', color: 'var(--gold)', border: '1px solid var(--border2)' }}>
+          <div className="stat-badge count-badge" style={{ background: 'var(--surface2)', color: 'var(--gold)', border: '1px solid var(--border2)' }}>
             {paperCount} papers
           </div>
         )}
         <div className="stat-badge" style={{
           background: 'var(--surface2)',
           color: ollamaOk ? 'var(--sage)' : 'var(--muted)',
-          border: `1px solid ${ollamaOk ? 'rgba(122,158,126,0.3)' : 'var(--border)'}`,
+          border: `1px solid ${ollamaOk ? 'rgba(52,211,153,0.35)' : 'var(--border)'}`,
         }}>
-          <span style={{ width: 6, height: 6, borderRadius: '50%', background: ollamaOk ? 'var(--sage)' : 'var(--muted)', display: 'inline-block' }} />
+          <span className={ollamaOk ? 'live-dot' : ''} style={{ width: 6, height: 6, borderRadius: '50%', background: ollamaOk ? 'var(--sage)' : 'var(--muted)', display: 'inline-block' }} />
           Ollama {ollamaOk ? 'ready' : 'offline'}
         </div>
       </div>
@@ -167,24 +181,22 @@ function TabBar({ tabs, active, onChange, counts }) {
       {tabs.map(tab => {
         const isActive = active === tab.id
         return (
-          <button key={tab.id} onClick={() => onChange(tab.id)} style={{
+          <button key={tab.id} onClick={() => onChange(tab.id)} className={`tab-btn${isActive ? ' active' : ''}`} style={{
             padding: '8px 20px',
             border: 'none',
             background: 'transparent',
             color: isActive ? 'var(--gold)' : 'var(--muted)',
-            borderBottom: isActive ? '2px solid var(--gold)' : '2px solid transparent',
             fontWeight: isActive ? 600 : 400,
             fontSize: 15,
             fontFamily: 'var(--font)',
             display: 'flex', alignItems: 'center', gap: 8,
-            transition: 'color 0.15s',
             cursor: 'pointer',
             marginBottom: -1,
           }}>
             {tab.label}
             {counts[tab.id] > 0 && (
-              <span style={{
-                background: isActive ? 'rgba(184,149,87,0.15)' : 'var(--surface2)',
+              <span className="count-badge" style={{
+                background: isActive ? 'rgba(167,139,250,0.16)' : 'var(--surface2)',
                 color: isActive ? 'var(--gold)' : 'var(--muted)',
                 border: '1px solid var(--border)',
                 borderRadius: 3, padding: '0 6px', fontSize: 11,
@@ -198,39 +210,3 @@ function TabBar({ tabs, active, onChange, counts }) {
   )
 }
 
-function Hero() {
-  const examples = ['exoplanet atmospheres', 'transformer attention', 'diffusion models', 'protein folding', 'CRISPR gene editing', 'quantum computing']
-  return (
-    <div style={{ textAlign: 'center', paddingTop: 72, paddingBottom: 56 }}>
-      <div style={{ fontSize: 13, fontFamily: 'var(--font-mono)', letterSpacing: '1.5px', textTransform: 'uppercase', color: 'var(--muted)', marginBottom: 20 }}>
-        Scientific Literature Explorer
-      </div>
-      <h1 style={{ fontSize: 42, fontWeight: 500, fontStyle: 'italic', letterSpacing: '-0.5px', marginBottom: 16, lineHeight: 1.2, color: 'var(--text)' }}>
-        Search any research topic
-      </h1>
-      <div style={{ width: 60, height: 1, background: 'var(--border2)', margin: '0 auto 24px' }} />
-      <p style={{ fontSize: 17, color: 'var(--text2)', maxWidth: 520, margin: '0 auto 44px', lineHeight: 1.85 }}>
-        The agent searches ArXiv &amp; Semantic Scholar, summarizes with a local LLM,
-        builds a knowledge graph, and flags contradictions — all in real time.
-      </p>
-
-      <div style={{ display: 'flex', gap: 1, justifyContent: 'center', flexWrap: 'wrap', marginBottom: 48 }}>
-        {[
-          { label: 'Paper Search', sub: 'ArXiv + Semantic Scholar' },
-          { label: 'AI Summaries', sub: 'Ollama, locally' },
-          { label: 'Knowledge Graph', sub: 'Concepts & connections' },
-          { label: 'Contradiction Flags', sub: 'Conflicting claims' },
-        ].map((f, i) => (
-          <div key={f.label} className="panel" style={{
-            padding: '16px 22px', textAlign: 'center', minWidth: 160,
-            borderRadius: i === 0 ? 'var(--radius) 0 0 var(--radius)' : i === 3 ? '0 var(--radius) var(--radius) 0' : 0,
-            borderLeft: i > 0 ? 'none' : undefined,
-          }}>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', marginBottom: 4 }}>{f.label}</div>
-            <div style={{ fontSize: 12, color: 'var(--muted)', fontFamily: 'var(--font-mono)' }}>{f.sub}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}

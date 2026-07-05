@@ -1,13 +1,17 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 const EXAMPLES = ['exoplanet atmospheres', 'transformer attention', 'protein folding', 'diffusion models', 'CRISPR gene editing']
 
-export default function AgentRunner({ onRun, running }) {
-  const [query, setQuery]             = useState('')
+export default function AgentRunner({ onRun, running, preset = '', dark = false }) {
+  const [query, setQuery]             = useState(preset)
   const [maxPerSource, setMax]        = useState(5)
   const [sources, setSources]         = useState(['arxiv', 'semantic_scholar'])
   const [showOptions, setShowOptions] = useState(false)
   const inputRef = useRef()
+
+  useEffect(() => {
+    if (preset) { setQuery(preset); inputRef.current?.focus() }
+  }, [preset])
 
   const toggle = src =>
     setSources(p => p.includes(src) ? p.filter(s => s !== src) : [...p, src])
@@ -20,13 +24,12 @@ export default function AgentRunner({ onRun, running }) {
   return (
     <div>
       {/* Search bar */}
-      <div style={{
+      <div className="search-shell anim-fade-in-up" style={{
         display: 'flex', gap: 0, alignItems: 'stretch',
         border: '1px solid var(--border2)',
         borderRadius: 'var(--radius)',
         background: 'var(--surface)',
         overflow: 'hidden',
-        transition: 'border-color 0.15s',
       }}>
         <input
           ref={inputRef}
@@ -48,6 +51,7 @@ export default function AgentRunner({ onRun, running }) {
         />
         <button
           onClick={() => setShowOptions(p => !p)}
+          className="icon-btn"
           style={{
             background: showOptions ? 'var(--surface2)' : 'transparent',
             border: 'none',
@@ -55,7 +59,6 @@ export default function AgentRunner({ onRun, running }) {
             color: showOptions ? 'var(--gold)' : 'var(--muted)',
             width: 44,
             fontSize: 14,
-            transition: 'all 0.15s',
             flexShrink: 0,
           }}
           title="Options">
@@ -64,6 +67,7 @@ export default function AgentRunner({ onRun, running }) {
         <button
           onClick={submit}
           disabled={running || !query.trim() || !sources.length}
+          className={`btn-primary${running ? ' running-glow' : ''}`}
           style={{
             padding: '0 28px',
             border: 'none',
@@ -74,7 +78,6 @@ export default function AgentRunner({ onRun, running }) {
             fontSize: 15,
             fontFamily: 'var(--font)',
             display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0,
-            transition: 'background 0.15s, color 0.15s',
             cursor: (running || !query.trim()) ? 'not-allowed' : 'pointer',
           }}>
           {running ? <><Spinner />Running…</> : 'Run Agent'}
@@ -83,7 +86,7 @@ export default function AgentRunner({ onRun, running }) {
 
       {/* Options drawer */}
       {showOptions && (
-        <div className="panel" style={{ marginTop: 6, padding: '14px 18px', display: 'flex', flexWrap: 'wrap', gap: 20, alignItems: 'center', borderRadius: 'var(--radius)' }}>
+        <div className="panel drawer" style={{ marginTop: 6, padding: '14px 18px', display: 'flex', flexWrap: 'wrap', gap: 20, alignItems: 'center', borderRadius: 'var(--radius)' }}>
           <OptionGroup label="Papers per source">
             <input type="number" min={1} max={20} value={maxPerSource}
               onChange={e => setMax(Number(e.target.value))}
@@ -96,12 +99,11 @@ export default function AgentRunner({ onRun, running }) {
           <OptionGroup label="Sources">
             <div style={{ display: 'flex', gap: 8 }}>
               {[['arxiv', 'ArXiv'], ['semantic_scholar', 'Semantic Scholar']].map(([id, label]) => (
-                <button key={id} onClick={() => toggle(id)} style={{
+                <button key={id} onClick={() => toggle(id)} className="src-chip" style={{
                   padding: '4px 14px', borderRadius: 3, fontSize: 13, fontFamily: 'var(--font)',
                   border: `1px solid ${sources.includes(id) ? 'var(--gold)' : 'var(--border)'}`,
-                  background: sources.includes(id) ? 'rgba(184,149,87,0.1)' : 'transparent',
+                  background: sources.includes(id) ? 'rgba(167,139,250,0.12)' : 'transparent',
                   color: sources.includes(id) ? 'var(--gold)' : 'var(--muted)',
-                  transition: 'all 0.15s',
                 }}>{label}</button>
               ))}
             </div>
@@ -110,11 +112,11 @@ export default function AgentRunner({ onRun, running }) {
       )}
 
       {/* Example chips */}
-      <div style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-        <span style={{ fontSize: 13, color: 'var(--muted)', fontStyle: 'italic' }}>Try:</span>
+      <div className="anim-fade-in-up d2" style={{ marginTop: 10, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+        <span style={{ fontSize: 13, color: dark ? 'rgba(226,232,250,0.7)' : 'var(--muted)', fontStyle: 'italic' }}>Try:</span>
         {EXAMPLES.map(ex => (
           <button key={ex} onClick={() => { setQuery(ex); inputRef.current?.focus() }} disabled={running}
-            className="tag"
+            className={`tag${dark ? ' tag-dark' : ''}`}
             style={{ background: 'none', cursor: 'pointer' }}>
             {ex}
           </button>
@@ -137,7 +139,7 @@ function Spinner() {
   return (
     <span style={{
       width: 12, height: 12, borderRadius: '50%', display: 'inline-block',
-      border: '1.5px solid rgba(232,220,200,0.25)', borderTopColor: 'var(--text)',
+      border: '1.5px solid rgba(167,139,250,0.3)', borderTopColor: 'var(--gold)',
       animation: 'spin 0.8s linear infinite',
     }} />
   )

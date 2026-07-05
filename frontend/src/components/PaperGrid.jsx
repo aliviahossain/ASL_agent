@@ -9,12 +9,12 @@ export default function PaperGrid({ papers, summaries, query, onSelect }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+      <div className="anim-fade-in" style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
         <span style={{ fontSize: 14, color: 'var(--muted)', fontStyle: 'italic' }}>
           {papers.length} paper{papers.length !== 1 ? 's' : ''} found
         </span>
         {Object.keys(summaries).length > 0 && (
-          <span style={{ fontSize: 12, padding: '1px 9px', borderRadius: 3, background: 'rgba(122,158,126,0.1)', color: 'var(--sage)', border: '1px solid rgba(122,158,126,0.25)', fontFamily: 'var(--font-mono)' }}>
+          <span className="count-badge" style={{ fontSize: 12, padding: '1px 9px', borderRadius: 3, background: 'rgba(52,211,153,0.12)', color: 'var(--sage)', border: '1px solid rgba(52,211,153,0.3)', fontFamily: 'var(--font-mono)' }}>
             {Object.keys(summaries).length} summarised
           </span>
         )}
@@ -28,20 +28,21 @@ export default function PaperGrid({ papers, summaries, query, onSelect }) {
   )
 }
 
-function PaperCard({ paper, summarized, onClick }) {
+function PaperCard({ paper, summarized, index, onClick }) {
   const isArxiv = paper.source === 'arxiv'
   const accentColor = isArxiv ? 'var(--gold)' : 'var(--sage)'
 
   return (
     <div
       onClick={onClick}
-      className="panel panel-hover"
+      className="panel panel-hover anim-fade-in-up"
       style={{
-        borderLeft: `3px solid ${isArxiv ? 'var(--gold2)' : 'rgba(122,158,126,0.4)'}`,
+        borderLeft: `3px solid ${isArxiv ? 'var(--gold2)' : 'rgba(52,211,153,0.45)'}`,
         borderRadius: 'var(--radius)',
         padding: '16px 20px',
         cursor: 'pointer',
         position: 'relative',
+        animationDelay: `${Math.min(index, 8) * 0.06}s`,
       }}>
 
       {/* Header row */}
@@ -51,7 +52,7 @@ function PaperCard({ paper, summarized, onClick }) {
         </h3>
         <div style={{ display: 'flex', gap: 6, flexShrink: 0, alignItems: 'center' }}>
           {summarized && (
-            <span style={{ fontSize: 11, padding: '1px 8px', borderRadius: 3, background: 'rgba(122,158,126,0.1)', color: 'var(--sage)', border: '1px solid rgba(122,158,126,0.25)', fontFamily: 'var(--font-mono)' }}>
+            <span className="count-badge" style={{ fontSize: 11, padding: '1px 8px', borderRadius: 3, background: 'rgba(52,211,153,0.12)', color: 'var(--sage)', border: '1px solid rgba(52,211,153,0.3)', fontFamily: 'var(--font-mono)' }}>
               summarised
             </span>
           )}

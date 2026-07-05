@@ -29,7 +29,7 @@ export default function RunHistory() {
 
   if (runs.length === 0) {
     return (
-      <div className="panel" style={{ padding: 48, textAlign: 'center' }}>
+      <div className="panel anim-scale-in" style={{ padding: 48, textAlign: 'center' }}>
         <div style={{ fontSize: 15, fontWeight: 500, color: 'var(--text)', marginBottom: 8 }}>No runs recorded yet</div>
         <div style={{ fontSize: 14, color: 'var(--muted)', marginBottom: 22, lineHeight: 1.8, fontStyle: 'italic' }}>
           Every agent run is tracked automatically with MLflow.<br/>
@@ -54,7 +54,7 @@ export default function RunHistory() {
           { label: 'Papers Fetched', value: totalPapers.toLocaleString() },
           { label: 'Avg Duration',  value: `${avgDuration}s` },
         ].map((m, i) => (
-          <div key={m.label} className="panel" style={{
+          <div key={m.label} className={`panel anim-fade-in-up d${i + 1}`} style={{
             flex: 1, padding: '12px 18px',
             borderRadius: i === 0 ? 'var(--radius) 0 0 var(--radius)' : i === 2 ? '0 var(--radius) var(--radius) 0' : 0,
             borderLeft: i > 0 ? 'none' : undefined,
@@ -66,22 +66,22 @@ export default function RunHistory() {
       </div>
 
       <div style={{ display: 'grid', gap: 10 }}>
-        {runs.map((run, i) => <RunCard key={run.run_id} run={run} />)}
+        {runs.map((run, i) => <RunCard key={run.run_id} run={run} index={i} />)}
       </div>
     </div>
   )
 }
 
-function RunCard({ run }) {
+function RunCard({ run, index }) {
   const status = (run.status || '').toUpperCase()
   const statusCfg = {
-    FINISHED: { color: 'var(--sage)',  bg: 'rgba(122,158,126,0.08)' },
-    RUNNING:  { color: 'var(--amber)', bg: 'rgba(201,160,80,0.08)' },
-    FAILED:   { color: 'var(--clay)',  bg: 'rgba(176,112,96,0.08)' },
+    FINISHED: { color: 'var(--sage)',  bg: 'rgba(52,211,153,0.1)' },
+    RUNNING:  { color: 'var(--amber)', bg: 'rgba(251,191,36,0.1)' },
+    FAILED:   { color: 'var(--clay)',  bg: 'rgba(248,113,113,0.1)' },
   }[status] || { color: 'var(--muted)', bg: 'var(--surface)' }
 
   return (
-    <div className="panel panel-hover" style={{ padding: '16px 20px' }}>
+    <div className="panel panel-hover anim-fade-in-up" style={{ padding: '16px 20px', animationDelay: `${Math.min(index, 8) * 0.06}s` }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, marginBottom: 14 }}>
         <div>
           <div style={{ fontWeight: 500, fontSize: 15, marginBottom: 4, color: 'var(--text)' }}>

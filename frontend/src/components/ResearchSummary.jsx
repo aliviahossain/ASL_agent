@@ -19,7 +19,7 @@ export default function ResearchSummary({ overview, contradictions, papers, runn
             { label: 'Contradictions', value: contradictions.length, warn: contradictions.length > 0 },
             { label: 'Sources', value: [...new Set(papers.map(p => p.source))].join(' + ') },
           ].map((s, i) => (
-            <div key={s.label} className="panel" style={{
+            <div key={s.label} className={`panel anim-fade-in-up d${i + 1}`} style={{
               flex: 1, minWidth: 120, padding: '12px 18px',
               borderRadius: i === 0 ? 'var(--radius) 0 0 var(--radius)' : i === 2 ? '0 var(--radius) var(--radius) 0' : 0,
               borderLeft: i > 0 ? 'none' : undefined,
@@ -32,7 +32,7 @@ export default function ResearchSummary({ overview, contradictions, papers, runn
       )}
 
       {/* Overview */}
-      <div className="panel" style={{ padding: '24px 28px' }}>
+      <div className="panel anim-fade-in-up d2" style={{ padding: '24px 28px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
           <div style={{ width: 2, height: 18, background: 'var(--gold)', borderRadius: 2, flexShrink: 0 }} />
           <h2 style={{ fontSize: 17, fontWeight: 500, fontStyle: 'italic', color: 'var(--text)' }}>Research Overview</h2>
@@ -44,7 +44,7 @@ export default function ResearchSummary({ overview, contradictions, papers, runn
 
       {/* Contradictions */}
       {contradictions.length > 0 && (
-        <div style={{ background: 'rgba(176,112,96,0.04)', border: '1px solid rgba(176,112,96,0.22)', borderRadius: 'var(--radius)', padding: 24 }}>
+        <div className="anim-fade-in-up d3" style={{ background: 'rgba(248,113,113,0.05)', border: '1px solid rgba(248,113,113,0.28)', borderRadius: 'var(--radius)', padding: 24 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 18 }}>
             <div style={{ width: 2, height: 18, background: 'var(--clay)', borderRadius: 2, flexShrink: 0 }} />
             <h2 style={{ fontSize: 16, fontWeight: 500, color: 'var(--clay)', fontStyle: 'italic' }}>
@@ -53,7 +53,7 @@ export default function ResearchSummary({ overview, contradictions, papers, runn
           </div>
           <div style={{ display: 'grid', gap: 12 }}>
             {contradictions.map((c, i) => (
-              <div key={i} style={{ background: 'rgba(176,112,96,0.05)', border: '1px solid rgba(176,112,96,0.15)', borderRadius: 6, padding: 16 }}>
+              <div key={i} style={{ background: 'rgba(248,113,113,0.07)', border: '1px solid rgba(248,113,113,0.2)', borderRadius: 6, padding: 16 }}>
                 <div style={{ fontSize: 11, fontFamily: 'var(--font-mono)', color: 'var(--clay)', marginBottom: 12, textTransform: 'uppercase', letterSpacing: '0.8px' }}>
                   {c.topic || 'Conflicting Claims'}
                 </div>

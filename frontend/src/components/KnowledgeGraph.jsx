@@ -2,11 +2,11 @@ import { useRef, useCallback, useState, useEffect } from 'react'
 import ForceGraph2D from 'react-force-graph-2d'
 
 const NODE_CFG = {
-  paper:   { color: '#b89557', glow: 'rgba(184,149,87,0.6)',  size: 9,  ring: '#d4b47a' },
-  concept: { color: '#7a9e7e', glow: 'rgba(122,158,126,0.5)', size: 5,  ring: '#9bbf9e' },
-  method:  { color: '#c9a050', glow: 'rgba(201,160,80,0.5)',  size: 6,  ring: '#e0bc70' },
-  dataset: { color: '#b07060', glow: 'rgba(176,112,96,0.5)',  size: 5,  ring: '#c98a78' },
-  task:    { color: '#8a9eb0', glow: 'rgba(138,158,176,0.5)', size: 5,  ring: '#aabccc' },
+  paper:   { color: '#a78bfa', glow: 'rgba(167,139,250,0.6)', size: 9,  ring: '#c4b5fd' },
+  concept: { color: '#34d399', glow: 'rgba(52,211,153,0.5)',  size: 5,  ring: '#6ee7b7' },
+  method:  { color: '#fbbf24', glow: 'rgba(251,191,36,0.5)',  size: 6,  ring: '#fde68a' },
+  dataset: { color: '#f87171', glow: 'rgba(248,113,113,0.5)', size: 5,  ring: '#fca5a5' },
+  task:    { color: '#38bdf8', glow: 'rgba(56,189,248,0.5)',  size: 5,  ring: '#7dd3fc' },
 }
 
 const LEGEND = [
@@ -74,7 +74,7 @@ export default function KnowledgeGraph({ data }) {
     }
 
     ctx.beginPath(); ctx.arc(node.x, node.y, size, 0, Math.PI * 2)
-    ctx.fillStyle = isActive ? '#e8dcc8' : cfg.color; ctx.fill()
+    ctx.fillStyle = isActive ? '#ffffff' : cfg.color; ctx.fill()
 
     const fontSize = Math.max(8 / scale, 3.5)
     const showLabel = scale > 1.2 || node.type === 'paper' || isActive
@@ -85,9 +85,9 @@ export default function KnowledgeGraph({ data }) {
       ctx.font = `${node.type === 'paper' ? 600 : 400} ${fontSize}px 'EB Garamond', Georgia, serif`
       ctx.textAlign = 'center'; ctx.textBaseline = 'top'
       const textY = node.y + size + 2
-      ctx.fillStyle = 'rgba(15,13,9,0.85)'
+      ctx.fillStyle = 'rgba(4,6,14,0.85)'
       ctx.fillText(label, node.x + 0.5, textY + 0.5)
-      ctx.fillStyle = isActive ? '#e8dcc8' : (node.type === 'paper' ? 'rgba(232,220,200,0.9)' : 'rgba(194,180,154,0.75)')
+      ctx.fillStyle = isActive ? '#ffffff' : (node.type === 'paper' ? 'rgba(236,239,249,0.92)' : 'rgba(165,176,210,0.78)')
       ctx.fillText(label, node.x, textY)
     }
   }, [hovered, selected])
@@ -148,16 +148,16 @@ export default function KnowledgeGraph({ data }) {
           graphData={filteredData}
           width={dims.w}
           height={dims.h}
-          backgroundColor="#0f0d09"
+          backgroundColor="#070a13"
           nodeCanvasObject={nodeCanvasObject}
           nodeCanvasObjectMode={() => 'replace'}
           onNodeHover={setHovered}
           onNodeClick={handleNodeClick}
-          linkColor={link => link.relation === 'SIMILAR_TO' ? 'rgba(184,149,87,0.4)' : 'rgba(90,80,70,0.25)'}
+          linkColor={link => link.relation === 'SIMILAR_TO' ? 'rgba(167,139,250,0.45)' : 'rgba(120,132,175,0.22)'}
           linkWidth={link => link.relation === 'SIMILAR_TO' ? 1.5 : 1}
           linkDirectionalParticles={link => link.relation === 'SIMILAR_TO' ? 2 : 0}
           linkDirectionalParticleWidth={1.5}
-          linkDirectionalParticleColor={() => '#b89557'}
+          linkDirectionalParticleColor={() => '#a78bfa'}
           linkDirectionalParticleSpeed={0.005}
           d3AlphaDecay={0.02}
           d3VelocityDecay={0.3}
@@ -166,7 +166,7 @@ export default function KnowledgeGraph({ data }) {
         />
 
         {hovered && hovered.type === 'paper' && hovered !== selected && (
-          <div style={{
+          <div className="anim-fade-in-up" style={{
             position: 'absolute', bottom: 16, left: 16, maxWidth: 360,
             background: 'var(--surface2)', border: '1px solid var(--border2)',
             borderLeft: '3px solid var(--gold)', borderRadius: 6, padding: 14,
@@ -178,7 +178,7 @@ export default function KnowledgeGraph({ data }) {
         )}
 
         {selected && selected.type !== 'paper' && (
-          <div style={{
+          <div className="anim-scale-in" style={{
             position: 'absolute', bottom: 16, right: 16, maxWidth: 260,
             background: 'var(--surface2)', border: `1px solid ${NODE_CFG[selected.type]?.color + '50' || 'var(--border)'}`,
             borderRadius: 6, padding: 14, pointerEvents: 'none',

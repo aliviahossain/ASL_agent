@@ -13,14 +13,16 @@ export default function PaperModal({ paper, summary, onClose }) {
   return (
     <div
       onClick={onClose}
+      className="modal-backdrop"
       style={{
         position: 'fixed', inset: 0, zIndex: 1000,
-        background: 'rgba(10,8,5,0.82)',
+        background: 'rgba(3,5,12,0.72)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         padding: 24,
       }}>
       <div
         onClick={e => e.stopPropagation()}
+        className="modal-card"
         style={{
           background: 'var(--bg2)',
           border: '1px solid var(--border2)',
@@ -44,12 +46,11 @@ export default function PaperModal({ paper, summary, onClose }) {
                 {paper.title}
               </h2>
             </div>
-            <button onClick={onClose} style={{
+            <button onClick={onClose} className="close-btn" aria-label="Close" style={{
               background: 'var(--surface)', border: '1px solid var(--border)',
               color: 'var(--muted)', width: 34, height: 34, borderRadius: 4,
               fontSize: 14, flexShrink: 0,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              transition: 'color 0.15s',
             }}>✕</button>
           </div>
 
@@ -72,7 +73,7 @@ export default function PaperModal({ paper, summary, onClose }) {
           {summary && (
             <Section title="AI-Generated Summary">
               <div style={{
-                background: 'rgba(122,158,126,0.05)', border: '1px solid rgba(122,158,126,0.2)',
+                background: 'rgba(52,211,153,0.06)', border: '1px solid rgba(52,211,153,0.25)',
                 borderRadius: 6, padding: '16px 18px',
                 fontSize: 15, lineHeight: 1.85, color: 'var(--text2)',
                 whiteSpace: 'pre-wrap',
@@ -123,13 +124,13 @@ function Section({ title, children }) {
 
 function LinkButton({ href, children, primary }) {
   return (
-    <a href={href} target="_blank" rel="noreferrer" style={{
+    <a href={href} target="_blank" rel="noreferrer" className="link-btn" style={{
       padding: '8px 20px', borderRadius: 4, fontSize: 14, fontWeight: 500,
       textDecoration: 'none', fontFamily: 'var(--font)',
       background: primary ? 'var(--gold)' : 'var(--surface)',
       border: primary ? 'none' : '1px solid var(--border2)',
       color: primary ? 'var(--bg)' : 'var(--text2)',
-      transition: 'opacity 0.15s',
+      display: 'inline-block',
     }}>
       {children}
     </a>
