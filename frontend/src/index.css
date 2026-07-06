@@ -387,6 +387,7 @@ a { color: inherit; }
   inset: 0;
   opacity: 0;
   transition: opacity 1.8s ease-in-out;
+  will-change: opacity;
 }
 .kb-slide.active { opacity: 1; }
 .kb-slide img {
@@ -394,9 +395,14 @@ a { color: inherit; }
   height: 100%;
   object-fit: cover;
   display: block;
+  will-change: transform;
 }
-.kb-slide:nth-child(odd).active img  { animation: kb-drift-a 18s ease-out forwards; }
-.kb-slide:nth-child(even).active img { animation: kb-drift-b 18s ease-out forwards; }
+/* .leaving keeps the same animation running while the slide fades out,
+   so its zoom doesn't snap back mid-crossfade */
+.kb-slide:nth-child(odd).active img,
+.kb-slide:nth-child(odd).leaving img  { animation: kb-drift-a 18s ease-out forwards; }
+.kb-slide:nth-child(even).active img,
+.kb-slide:nth-child(even).leaving img { animation: kb-drift-b 18s ease-out forwards; }
 
 @keyframes kb-drift-a {
   from { transform: scale(1.03); }

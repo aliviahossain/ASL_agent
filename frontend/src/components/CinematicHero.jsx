@@ -20,32 +20,42 @@ const DOMAINS = [
 const src = (id, w) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=80`
 
 export default function CinematicHero({ children, onPreset }) {
-  const [slide, setSlide] = useState(0)
-  const [par, setPar] = useState({ x: 0, y: 0 })
-  const heroRef = useRef()
+  const [{ slide, prev }, setSlides] = useState({ slide: 0, prev: null })
+  const heroRef  = useRef()
+  const stageRef = useRef()
+  const rafRef   = useRef()
+
+  const goTo = next =>
+    setSlides(s => next === s.slide ? s : { slide: next, prev: s.slide })
 
   useEffect(() => {
-    const t = setInterval(() => setSlide(s => (s + 1) % SLIDES.length), 9000)
+    const t = setInterval(() => setSlides(s => ({ slide: (s.slide + 1) % SLIDES.length, prev: s.slide })), 9000)
     return () => clearInterval(t)
   }, [])
 
+  // Parallax writes straight to the DOM inside rAF — no React re-renders on mousemove
   const onMouseMove = e => {
     const r = heroRef.current?.getBoundingClientRect()
-    if (!r) return
-    setPar({
-      x: ((e.clientX - r.left) / r.width - 0.5) * 2,
-      y: ((e.clientY - r.top) / r.height - 0.5) * 2,
+    if (!r || rafRef.current) return
+    const x = ((e.clientX - r.left) / r.width - 0.5) * 2
+    const y = ((e.clientY - r.top) / r.height - 0.5) * 2
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null
+      if (stageRef.current)
+        stageRef.current.style.transform = `scale(1.08) translate(${x * -10}px, ${y * -7}px)`
     })
   }
+
+  useEffect(() => () => cancelAnimationFrame(rafRef.current), [])
 
   return (
     <>
       <section ref={heroRef} className="cine-hero" onMouseMove={onMouseMove}
                style={{ '--hero-a': SLIDES[slide].a, '--hero-b': SLIDES[slide].b }}>
         {/* Ken Burns slideshow */}
-        <div className="kb-stage" style={{ transform: `scale(1.08) translate(${par.x * -10}px, ${par.y * -7}px)` }}>
+        <div ref={stageRef} className="kb-stage" style={{ transform: 'scale(1.08)' }}>
           {SLIDES.map((s, i) => (
-            <div key={s.id + i} className={`kb-slide${i === slide ? ' active' : ''}`}>
+            <div key={s.id + i} className={`kb-slide${i === slide ? ' active' : i === prev ? ' leaving' : ''}`}>
               <img src={src(s.id, 1920)} alt="" loading={i === 0 ? 'eager' : 'lazy'}
                    onError={e => { e.currentTarget.style.display = 'none' }} />
             </div>
@@ -96,7 +106,7 @@ export default function CinematicHero({ children, onPreset }) {
         <div className="cine-caption">{SLIDES[slide].label}</div>
         <div className="dot-nav">
           {SLIDES.map((_, i) => (
-            <button key={i} aria-label={`Slide ${i + 1}`} className={i === slide ? 'on' : ''} onClick={() => setSlide(i)} />
+            <button key={i} aria-label={`Slide ${i + 1}`} className={i === slide ? 'on' : ''} onClick={() => goTo(i)} />
           ))}
         </div>
       </section>
